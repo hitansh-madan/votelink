@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Votelink</title>
+    <link rel="stylesheet" href="css/tailwind.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.1.2/firebase-firestore.js"></script>
+    <script src="js/firebaseInit.js"></script>
+    <script src="js/index.js"></script>
+    <script src="js/events.js"></script>
+</head>
+
+<body>
+    <div class="fixed w-full h-16 top-0 left-0 bg-indigo-700 m-auto flex justify-center items-center">
+        <div class="text-white text-center text-3xl">
+            Votelink
+        </div>
+    </div>
+    <div id="main" class="my-32 mx-20 justify-center items-center flex flex-col ">
+        <div id="connect" class="rounded-2xl border-2 hidden">
+            <div class="bg-gray-100 text-2xl text-center text-black px-20 py-5">
+                Create Election
+            </div>
+            <form id="connectForm" class="px-20 py-10 flex flex-col justify-center items-center">
+                <div>Election Name<input class="p-2 border-2 rounded-xl m-2 w-64" type="text" id="electionName"></div>
+                <button class="p-2 bg-indigo-700 text-white rounded-xl m-2 w-32" onclick="connect()" type="button">Initialize</button>
+            </form>
+        </div>
+
+        <div id="election" class="w-full rounded-2xl border-2 hidden ">
+            <div class="bg-gray-100 text-3xl rounded-2xl text-black px-20 py-5 flex flex-row justify-between ">
+                <div>Election</div>
+                <button class="text-xl text-white px-4 py-2 bg-indigo-900 rounded-2xl" onclick="App.publishResult()">Publish Results</button>
+            </div>
+            <div class='' id="electionForm">
+                <div class="border-b-2 pb-8 ">
+                    <div class="text-2xl py-5 mx-16 border-b-2 mb-8">
+                        Add Constituency
+                    </div>
+                    <div class="px-10 inline-block w-80">Constituency Id:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="ConstituencyId">
+                    <div class="px-10 inline-block w-80">Constituency Name:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="ConstituencyName">
+                    <button class="py-2 px-4 bg-indigo-700 text-white rounded-xl m-2 block m-auto" onclick="App.addConstituency()">Add Constituency</button>
+                </div>
+
+                <div class="border-b-2 pb-8 ">
+                    <div class="text-2xl py-5 mx-16 border-b-2 mb-8">
+                        Add Candidate
+                    </div>
+                    <div class="px-10 inline-block w-80">Constituency Id:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="CndtConstituencyId">
+                    <div class="px-10 inline-block w-80">Candidate Id:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="CandidateId">
+                    <div class="px-10 inline-block w-80">Party Id:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="CndtPartyId">
+                    <div class="px-10 inline-block w-80">Candidate Name:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="CandidateName">
+                    <button class="py-2 px-4 bg-indigo-700 text-white rounded-xl m-2 block m-auto" onclick="App.addCandidate()">Add Candidate</button>
+                </div>
+
+                <div class="border-b-2 pb-8 ">
+                    <div class="text-2xl py-5 mx-16 border-b-2 mb-8">
+                        Add Party
+                    </div>
+                    <div class="px-10 inline-block w-80">Party Id:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="PartyId">
+                    <div class="px-10 inline-block w-80">Party Name:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="PartyName">
+                    <button class="py-2 px-4 bg-indigo-700 text-white rounded-xl m-2 block m-auto" onclick="App.addParty()">Add Party</button>
+                </div>
+
+                <div class="border-b-2 pb-8 ">
+                    <div class="text-2xl py-5 mx-16 border-b-2 mb-8">
+                        Add Voter
+                    </div>
+                    <div class="px-10 inline-block w-80">Voter Address:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="VoterAddress">
+                    <div class="px-10 inline-block w-80">Constituency Id:</div><input type="text" class="p-2 border-2 rounded-xl m-2 w-3/5 " id="VoterConstituencyId">
+                    <button class="py-2 px-4 bg-indigo-700 text-white rounded-xl m-2 block m-auto" onclick="App.addVoter()">Add Voter</button>
+                </div>
+            </div>
+        </div>
+        <div id="electionEvents" class="w-full rounded-2xl border-2 ">
+            <div class="bg-purple-300 text-3xl rounded-2xl text-black px-20 py-5 flex flex-row justify-between ">
+                <div>Election Events</div>
+            </div>
+        </div>
+        <div id="voteCountEvents" class="w-full rounded-2xl border-2 ">
+            <div class="bg-purple-300 text-3xl rounded-2xl text-black px-20 py-5 flex flex-row justify-between ">
+                <div>Vote Count Events</div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+</body>
+
+</html>
